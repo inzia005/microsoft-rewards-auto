@@ -9,6 +9,7 @@ import os
 import subprocess
 import sys
 import threading
+import time
 from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -21,6 +22,11 @@ RUNNER = BASE / "run.py"
 PORT = 8765
 
 _lock = threading.Lock()
+
+# pythonw has no console of its own; any console child (tasklist, powershell)
+# would otherwise allocate a fresh console window that flashes on screen.
+NOWIN = getattr(subprocess, "CREATE_NO_WINDOW", 0) if os.name == "nt" else 0
+_alive_cache: list = [0.0, False]
 
 
 def read_config() -> dict:
@@ -75,14 +81,21 @@ def snapshot() -> dict:
 
 
 def _runner_alive() -> bool:
+    now = time.monotonic()
+    if now - _alive_cache[0] < 2.0:
+        return bool(_alive_cache[1])
+    alive = False
     try:
         out = subprocess.run(
             ["tasklist", "/FI", "IMAGENAME eq msedge.exe", "/FO", "CSV", "/NH"],
-            capture_output=True, text=True, timeout=8,
+            capture_output=True, text=True, timeout=8, creationflags=NOWIN,
         ).stdout
-        return "msedge.exe" in out.lower() and _marker_alive()
+        alive = "msedge.exe" in out.lower() and _marker_alive()
     except Exception:
-        return False
+        alive = False
+    _alive_cache[0] = now
+    _alive_cache[1] = alive
+    return alive
 
 
 def _marker_alive() -> bool:

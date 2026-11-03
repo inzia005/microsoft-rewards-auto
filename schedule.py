@@ -4,6 +4,7 @@ Usage:  python schedule.py install | remove | status
 """
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -11,6 +12,8 @@ from pathlib import Path
 TASK = "MicrosoftRewardsAuto"
 BASE = Path(__file__).resolve().parent
 SCRIPT = BASE / "run.py"
+# pythonw has no console; keep child PowerShell from allocating a visible one.
+NOWIN = getattr(subprocess, "CREATE_NO_WINDOW", 0) if os.name == "nt" else 0
 # Prefer the windowless interpreter from the same environment (no console flash).
 _pyw = Path(sys.executable).with_name("pythonw.exe")
 PYW = _pyw if _pyw.is_file() else Path(sys.executable)
@@ -50,7 +53,7 @@ if ($null -eq $t) {{ Write-Output "not-installed" }} else {{
 def run_ps(script: str) -> int:
     proc = subprocess.run(
         ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", script],
-        capture_output=True, text=True, timeout=120,
+        capture_output=True, text=True, timeout=120, creationflags=NOWIN,
     )
     out = (proc.stdout or "").strip()
     err = (proc.stderr or "").strip()
