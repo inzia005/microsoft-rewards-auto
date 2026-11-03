@@ -1,0 +1,26 @@
+# --- local state, never share ---
+.venv/
+venv/
+profile/
+profile_backup*/
+logs/
+dev/
+
+# --- per-machine files ---
+config.json
+state.json
+login_state.json
+.running
+
+# --- python / editor noise ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.vscode/
+.idea/
+
+# --- OS noise ---
+Thumbs.db
+desktop.ini
+.DS_Store

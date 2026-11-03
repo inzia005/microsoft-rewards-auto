@@ -1,0 +1,26 @@
+{
+  "enabled": true,
+  "headless": false,
+  "min_delay": 2.0,
+  "max_delay": 5.0,
+  "do_search_streak": true,
+  "do_activities": true,
+  "do_punchcards": true,
+  "do_puzzle": true,
+  "notify": true,
+  "max_cards": 24,
+  "auto_window": ["07:00", "23:30"],
+  "idle_only": true,
+  "idle_seconds": 300,
+  "recheck_hours": 6,
+  "search_keywords": [
+    "今天的天气",
+    "人工智能 最新进展",
+    "健康晚餐食谱",
+    "周末旅行攻略",
+    "好看的电影推荐",
+    "咖啡 好处",
+    "颈椎 放松",
+    "秋冬穿搭"
+  ]
+}
